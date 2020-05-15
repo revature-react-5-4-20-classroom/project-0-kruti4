@@ -1,5 +1,5 @@
 import Role from "./Role"
-export default class User {
+export class User {
   userId: number;// primary key
   userName: string; // not null, unique
   password: string; // not null
