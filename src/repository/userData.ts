@@ -75,8 +75,8 @@ export async function findUserByUsernamePassword(username: string, password: str
     try {
         let result: QueryResult;
         result = await client.query(
-            `SELECT users.id, users.username, users.password, users.email, roles.role_name
-          FROM users INNER JOIN roles ON users.role_id = roles.id
+            `SELECT users.user_id, users.username, users.password, users.email, roles.role
+          FROM users INNER JOIN roles ON users.role = roles.role_id
           WHERE users.username = $1 AND users.password = $2;`, [username, password]
         );
         const usersMatchingUsernamePassword = result.rows.map((u) => {

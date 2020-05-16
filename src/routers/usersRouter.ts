@@ -6,7 +6,7 @@ import { authRoleFactory } from "../middlewares/authenticationMiddleware";
 // import { authAdminMiddleware, authRoleFactory } from "../middleware/authMiddleware";
 export const userRouter: Router= express.Router();
 
-userRouter.use(authRoleFactory(['admin']));
+userRouter.use(authRoleFactory(['admin','finance-manager']));
 
 userRouter.get("/", async (req: Request, res: Response) => {
     res.json(await getAllUsers());

@@ -1,4 +1,4 @@
-import express from "express";
+import express,{Request,Response,NextFunction} from "express";
 import { Router } from "express";
 import { findUserByUsernamePassword } from "../repository/userData";
 export const loginRouter:Router =express.Router();
