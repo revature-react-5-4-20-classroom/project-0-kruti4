@@ -1,62 +1,97 @@
 CREATE TABLE reimbursement
 (
-    reimbursementId: int not null, 
+    reimbursement_id: int not null, 
     author: int,
     amount: int  not null,
     dateSubmitted: int not null,
     dateResolved: int not null,
-    description : varchar(100) not null,
+    "description" : varchar(100) not null,
     resolver: number,
-    status: int not null,
-    type: int, 
-    constraint pk_reimbursement primary key (reimbursementId)
+    "status": int not null,
+    "type": int, 
+    constraint pk_reimbursement primary key (reimbursement_id)
 );
 
 
 create table reimbursement_status
 (
-    statusId:int not null,,
-    status:varchar(100) not null unique,
-    constraint pk_reimbursement_status primary key (statusId)
+    status_id serial,
+    "status" varchar(100) not null unique,
+    constraint pk_reimbursement_status primary key (status_id)
 )
 create table reimbursement_types
 (
-    typeId :int not null,
-    type :varchar(15) not null unique,
-    constraint pk_reimbursement_types primary key (typeId)
+    type_id  serial,
+    "type"  varchar(15) not null unique,
+    constraint pk_reimbursement_types primary key (type_id)
 )
 
-create table role
+create table roles
 (
-    roleId:int not null,
-    role:varchar(30) not null unique,
-    constraint pk_role primary key (roleId)
+    role_id serial,
+    "role" varchar(30) not null unique,
+    constraint pk_role primary key (role_id)
 
 
 )
-create table user
+create table users
 (
-    userId: int not null,
-    userName: varchar null unique, 
-    password: varchar not null,
-    firstName: varchar not null,
-    lastName: varchar not null,
-    email: varchar not null,
-    role: Role; 
-
+    user_id  serial not null,
+    username varchar null unique, 
+    "password" varchar not null,
+    firstname varchar not null,
+    lastname varchar not null,
+    email varchar not null,
+    "role" int,-- include roleId of roll
+    constraint pk_user primary key (user_id)
 )
 
 --foreign keys for table reimbursement
 alter table reimbursement add constraint fk_reimbursement_user
-foreign key (auther) reference user (userId) ON DELETE NO ACTION ON UPDATE NO ACTION;
+foreign key (auther) reference user (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 alter table reimbursement add constraint fk_reimbursement_user
-foreign key (resolver) reference user (userId) ON DELETE NO ACTION ON UPDATE NO ACTION;
+foreign key (resolver) reference user (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 alter table reimbursement add constraint fk_reimbursement_user
-foreign key (status) reference Reimbursement_status (statusId) ON DELETE NO ACTION ON UPDATE NO ACTION;
+foreign key (status) reference Reimbursement_status (status_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 alter table reimbursement add constraint fk_reimbursement_user
-foreign key (type) reference Reimbursement_type () ON DELETE NO ACTION ON UPDATE NO ACTION;
+foreign key (type) reference Reimbursement_types (type_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
+
+
+--finance-manager,admin,manager, developer
+ 
+---inserting data into users table
+insert into users values(default,'user0','ldsjkl','jane','doe','janed@gmial.com',1);  
+insert into users values(default,'user1','asdfg','john','doe','johnd@gmial.com',3); 
+insert into users values(default,'user3','awrfg','abc','xyz','abc@gmial.com',4);
+insert into users values(default,'user4','gsdgfg','pqr','doe','[qr]@gmial.com',3);  
+insert into users values(default,'user5','asdfg','ijk','xyz','ijk@gmial.com',2); 
+
+
+insert into roles values (1,'admin');
+insert into roles values (2,'developer');
+insert into roles values (3,'finance-manager');
+insert into roles values (4,'manager');
+
+
+insert into Reimbursement_status values(1 ,'approved');
+insert into Reimbursement_status values(2,'pending');
+insert into Reimbursement_status values(3,'denied');
+
+insert into reimbursement_types values(1,'lodging');
+insert into reimbursement_types values(2,'travel');
+insert into Reimbursement_types values(3,'food');
+insert into reimbursement_types values(4,'other');
+
+insert into reimbursement(default,1,150,,,"business trip",'2','pending',2);
+insert into reimbursement(default,2,50,,,"client dinner",'4','pending',3);
+insert into reimbursement(default,3,50,,,"meeting cofee",'2','pending',3);
+insert into reimbursement(default,5,200,,,"software licence",'2','pending',4);
+
+
+
+
