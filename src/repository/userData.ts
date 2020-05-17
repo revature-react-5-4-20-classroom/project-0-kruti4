@@ -1,6 +1,6 @@
 
 import { User } from '../models/User';
-import { PoolClient, QueryResult } from 'pg';
+import { PoolClient, QueryResult, Pool } from 'pg';
 import { connectionPool } from '.';
 import Role from '../models/Role';
 
@@ -10,16 +10,13 @@ export async function getAllUsers(): Promise<User[]> {
     try {
         let result: QueryResult;
         result = await client.query(
-            `SELECT users.user_id, users.username, users.password,users.firstname,users.lastname, users.email, roles.role
+            `SELECT users.user_id, users.username, users.password,users.firstname,users.lastname, users.email,users.role as role_id, roles.role
       FROM users INNER JOIN roles ON users.role = roles.role_id;`
         );
         // result.rows contains objects that almost match our User objects.  Let's write a map()
         // that finishes the conversion
-        for (let row of result.rows) {
-            console.log(row.username);
-        }
         return result.rows.map((u) => {
-            return new User(u.user_id, u.username, u.password, u.firstname, u.lastname, u.email, u.role);
+            return new User(u.user_id, u.username, u.password, u.firstname, u.lastname, u.email, new Role(u.role_id, u.role));
         });
     } catch (e) {
         throw new Error(`Failed to query for all users: ${e.message}`);
@@ -31,8 +28,40 @@ export async function getAllUsers(): Promise<User[]> {
     }
 }
 
-// export function getUserById(id: number): User {
-//     return //users.filter((user) => { return user.id === id; })[0];
+export async function getUserById(id: number, loggedUserId: number, role: string): Promise<User> {
+    let client: PoolClient = await connectionPool.connect();
+    try {
+        if (id == loggedUserId || role == 'finance-manager') {
+            let result: QueryResult = await client.query(
+                `SELECT users.user_id, users.username, users.password,users.firstname,users.lastname, users.email,users.role as role_id, roles.role
+        FROM users INNER JOIN roles ON users.role = roles.role_id where users.user_id=$1;`, [id]
+            );
+            console.log(result.rows[0].user_id);
+
+            let uObj = new User(result.rows[0].user_id, result.rows[0].username, result.rows[0].password, result.rows[0].firstname, result.rows[0].lastname, result.rows[0].email, new Role(result.rows[0].role_id, result.rows[0].role))
+            console.log(uObj);
+            return uObj;
+        } else {
+            throw new Error('The incoming token has expired')
+        }
+    } catch (e) {
+        throw new Error(`Failed to query for all users: ${e.message}`);
+    } finally {
+        client && client.release();
+    }
+
+}
+
+// export async function updateUser(u: User): Promise<User> {
+// //     let client: PoolClient = await connectionPool.connect();
+// //     try{
+
+// //         let result:QueryResult= await client.query(
+// // `UPDATE user set  where user.user_id =$1;`,[u.userId]
+// //         )
+// //     }
+// //     return ;
+ 
 // }
 
 // export async function addNewUser(user: User): Promise<User> {
@@ -70,17 +99,16 @@ export async function getAllUsers(): Promise<User[]> {
 // }
 
 export async function findUserByUsernamePassword(username: string, password: string): Promise<User> {
-    let client: PoolClient;
-    client = await connectionPool.connect();
+    let client: PoolClient = await connectionPool.connect();
     try {
         let result: QueryResult;
         result = await client.query(
-            `SELECT users.user_id, users.username, users.password, users.email, roles.role
+            `SELECT users.user_id, users.username, users.password, users.email,users.role as role_id, roles.role 
           FROM users INNER JOIN roles ON users.role = roles.role_id
           WHERE users.username = $1 AND users.password = $2;`, [username, password]
         );
         const usersMatchingUsernamePassword = result.rows.map((u) => {
-            return new User(u.user_id, u.username, u.password, u.firstname, u.lastname, u.email, u.role);
+            return new User(u.user_id, u.username, u.password, u.firstname, u.lastname, u.email, new Role(u.role_id, u.role));
         })
         if (usersMatchingUsernamePassword.length > 0) {
             return usersMatchingUsernamePassword[0];

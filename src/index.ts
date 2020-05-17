@@ -7,7 +7,7 @@ import { userRouter } from "./routers/usersRouter";
 import { reimbursementsRouter } from "./routers/reimbursementsRouter";
 import { QueryResult, PoolClient } from "pg";
 import { connectionPool } from "./repository";
-import { loggingMiddleware } from "./middlewares/loginMiddleware";
+// import { loggingMiddleware } from "./middlewares/loginMiddleware";
 import { sessionMiddleware } from "./middlewares/sessionMiddleware";
 import { loginRouter } from "./routers/loginRouter";
 
@@ -15,7 +15,7 @@ const app: Application = express();
 app.use(bodyparser.json());
 
 app.use(sessionMiddleware);
-app.use(loggingMiddleware);
+// app.use(loggingMiddleware);
  
 app.use("/login",loginRouter);
 app.use("/users", userRouter);

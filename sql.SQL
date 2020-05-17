@@ -3,10 +3,10 @@ CREATE TABLE reimbursement
     reimbursement_id: int not null, 
     author: int,
     amount: int  not null,
-    dateSubmitted: int not null,
-    dateResolved: int not null,
+    dateSubmitted: date not null,
+    dateResolved: date not null,
     "description" : varchar(100) not null,
-    resolver: number,
+    resolver: int,
     "status": int not null,
     "type": int, 
     constraint pk_reimbursement primary key (reimbursement_id)
@@ -48,7 +48,7 @@ create table users
 
 --foreign keys for table reimbursement
 alter table reimbursement add constraint fk_reimbursement_user
-foreign key (auther) reference user (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
+foreign key (author) reference user (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 alter table reimbursement add constraint fk_reimbursement_user
 foreign key (resolver) reference user (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -87,11 +87,20 @@ insert into reimbursement_types values(2,'travel');
 insert into Reimbursement_types values(3,'food');
 insert into reimbursement_types values(4,'other');
 
-insert into reimbursement(default,1,150,,,"business trip",'2','pending',2);
-insert into reimbursement(default,2,50,,,"client dinner",'4','pending',3);
-insert into reimbursement(default,3,50,,,"meeting cofee",'2','pending',3);
-insert into reimbursement(default,5,200,,,"software licence",'2','pending',4);
+insert into reimbursement values (default,1,150,'2018-12-31','2019-1-10','business trip',2,2,2);
+insert into reimbursement values (default,2,50,'2019-02-02','2019-02-10','client dinner',4,1,3);
+insert into reimbursement values (default,3,50,'2019-03-03','2019-03-20','meeting cofee',2,1,3);
+insert into reimbursement values (default,5,200,'2019-04-04','2019-04-25','software licence',2,2,4);
 
 
 
 
+ reimbursement_id: int not null, 
+    author: int,
+    amount: int  not null,
+    dateSubmitted: date not null,
+    dateResolved: date not null,
+    "description" : varchar(100) not null,
+    resolver: int,
+    "status": int not null,
+    "type": int, 

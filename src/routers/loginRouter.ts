@@ -18,7 +18,7 @@ loginRouter.post('/', async (req: Request, res: Response) => {
         res.json(user);
       } catch (e) {
         console.log(e.message);
-        res.status(401).send('Failed to authenticate username and password');
+        res.status(400).send('Invalid Credentials');
       }
     }
   });

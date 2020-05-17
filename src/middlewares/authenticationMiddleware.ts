@@ -8,14 +8,14 @@ export function authRoleFactory(roles: string[]) {
       } else {
         let allowed = false;
         for(let role of roles) {
-          if(req.session.user.role === role) {
+          if(req.session.user.role.role === role) {
             allowed = true;
           }
         }
         if(allowed) {
           next();
         } else {
-          res.status(403).send(`Not authorized with role: ${req.session.user.role}`);
+          res.status(403).send(`Not authorized with role: ${req.session.user.role.role}`);
         }
       }
     }
