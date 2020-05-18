@@ -3,6 +3,7 @@ import { User } from '../models/User';
 import { PoolClient, QueryResult, Pool } from 'pg';
 import { connectionPool } from '.';
 import Role from '../models/Role';
+import { userRouter } from '../routers/usersRouter';
 
 export async function getAllUsers(): Promise<User[]> {
     let client: PoolClient;
@@ -45,24 +46,72 @@ export async function getUserById(id: number, loggedUserId: number, role: string
             throw new Error('The incoming token has expired')
         }
     } catch (e) {
-        throw new Error(`Failed to query for all users: ${e.message}`);
+        throw new Error(`Failed to query for get users by userid: ${e.message}`);
     } finally {
         client && client.release();
     }
 
 }
 
-// export async function updateUser(u: User): Promise<User> {
-// //     let client: PoolClient = await connectionPool.connect();
-// //     try{
+export async function updateUser(u: User): Promise<User> {
 
-// //         let result:QueryResult= await client.query(
-// // `UPDATE user set  where user.user_id =$1;`,[u.userId]
-// //         )
-// //     }
-// //     return ;
- 
-// }
+    let client: PoolClient = await connectionPool.connect();
+    try {
+        if (!u.userId) {
+            throw new Error("please provide user id");
+        }
+        else {
+            let oldU: QueryResult = await client.query(
+                `select * from reimbursement where reimbursement_id =$1;`, [u.userId]);
+            let uOld = new User(oldU.rows[0].user_id, oldU.rows[0].username, oldU.rows[0].password, oldU.rows[0].firstname, oldU.rows[0].lastname, oldU.rows[0].email,new Role(oldU.rows[0].role, oldU.rows[0].email));
+            
+            for (let ele of  Object.keys(uOld)) {
+                console.log(uOld[ele]);
+                
+                // if(uOld[ele]==undefined || uOld[ele]==null){
+                //     uOld[ele]=oldU[ele];
+                // }
+            }
+            // if (rO.author == undefined || rO.author == null) {
+            //     rO.author = rOld.author;
+            // }
+            // if (rO.amount == undefined || rO.amount == null) {
+            //     rO.amount = rOld.amount;
+            // }
+            // if (rO.dateSubmitted == undefined || rO.dateSubmitted == null) {
+            //     rO.dateSubmitted = rOld.dateSubmitted;
+            // }
+            // if (rO.dateResolved == undefined || rO.dateResolved == null) {
+            //     rO.dateResolved = rOld.dateResolved;
+            // }
+            // if (rO.description == undefined || rO.author == null) {
+            //     rO.author = rOld.author;
+            // }
+            // if (rO.author == undefined || rO.author == null) {
+            //     rO.author = rOld.author;
+            // }
+            // if (rO.author == undefined || rO.author == null) {
+            //     rO.author = rOld.author;
+            // }
+            // if (rO.author == undefined || rO.author == null) {
+            //     rO.author = rOld.author;
+            // }
+        }
+        let result: QueryResult = await client.query(
+            `UPDATE user set  where user.user_id =$1;`, [u.userId]);
+        // console.log(result.rows[0].user_id);
+        let updatedUser: QueryResult = await client.query(
+            `select * from user where user.user_id =$1;`, [u.userId]);
+        let uObj = new User(updatedUser.rows[0].user_id, updatedUser.rows[0].username, updatedUser.rows[0].password, updatedUser.rows[0].firstname, updatedUser.rows[0].lastname, updatedUser.rows[0].email, new Role(updatedUser.rows[0].role_id, updatedUser.rows[0].role));
+        console.log(uObj);
+        return uObj;
+
+    } catch (e) {
+        throw new Error(`Failed to query to update users: ${e.message}`);
+    } finally {
+        client && client.release();
+    }
+}
 
 // export async function addNewUser(user: User): Promise<User> {
 //     //     let client: PoolClient = await connectionPool.connect();

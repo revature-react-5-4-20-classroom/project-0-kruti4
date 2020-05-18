@@ -1,6 +1,6 @@
 
 import express, { Router, Request, Response } from "express";
-import { getAllUsers, getUserById } from "../repository/userData";
+import { getAllUsers, getUserById ,updateUser} from "../repository/userData";
 import { authRoleFactory } from "../middlewares/authenticationMiddleware";
 import { User } from "../models/User";
 
@@ -22,15 +22,21 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     }
 })
 userRouter.use(authRoleFactory(['admin']));
-// userRouter.patch("/",async (req: Request, res: Response) => {
-//     console.log("get patch request");
-//     let user:User=req.body;
-//     res.json(await updateUser(user)) 
-// })
+userRouter.patch("/",async (req: Request, res: Response) => {
+    console.log("get patch request");
+    let user:User=req.body;
+    res.json(await updateUser(user)) 
+})
+
 userRouter.use(authRoleFactory(['finance-manager']));
 
 userRouter.get("/", async (req: Request, res: Response) => {
-    res.json(await getAllUsers());
+    try {
+        res.json(await getAllUsers());
+    }
+    catch (e) {
+        res.json(e.message);
+    }
 });
 
 

@@ -15,7 +15,7 @@ export function authRoleFactory(roles: string[]) {
         if(allowed) {
           next();
         } else {
-          res.status(403).send(`Not authorized with role: ${req.session.user.role.role}`);
+          res.status(401).send(`Not authorized with role: ${req.session.user.role.role}`);
         }
       }
     }
