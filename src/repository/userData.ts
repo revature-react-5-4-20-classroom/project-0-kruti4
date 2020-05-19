@@ -62,46 +62,52 @@ export async function updateUser(u: User): Promise<User> {
         }
         else {
             let oldU: QueryResult = await client.query(
-                `select * from reimbursement where reimbursement_id =$1;`, [u.userId]);
-            let uOld = new User(oldU.rows[0].user_id, oldU.rows[0].username, oldU.rows[0].password, oldU.rows[0].firstname, oldU.rows[0].lastname, oldU.rows[0].email,new Role(oldU.rows[0].role, oldU.rows[0].email));
-            
-            for (let ele of  Object.keys(uOld)) {
-                console.log(uOld[ele]);
-                
-                // if(uOld[ele]==undefined || uOld[ele]==null){
-                //     uOld[ele]=oldU[ele];
-                // }
+                `select * from users where user_id =$1;`, [u.userId]);
+            let uOld = new User(oldU.rows[0].user_id, oldU.rows[0].username, oldU.rows[0].password, oldU.rows[0].firstname, oldU.rows[0].lastname, oldU.rows[0].email, new Role(oldU.rows[0].role, oldU.rows[0].role));
+            // Object.keys(uOld).forEach(key => {
+            //     console.log(uOld[key])
+            //   })
+            // for (let [key,ele] of uOld) {
+            //     console.log(ele[key]);
+
+            // if(uOld[ele]==undefined || uOld[ele]==null){
+            //     uOld[ele]=oldU[ele];
+            // }
+            // }
+            if (u.userName == undefined || u.userName == null) {
+                u.userName = uOld.userName;
             }
-            // if (rO.author == undefined || rO.author == null) {
-            //     rO.author = rOld.author;
+            if (u.password == undefined || u.password == null) {
+                u.password = uOld.password;
+            }
+            if (u.firstName == undefined || u.firstName == null) {
+                u.firstName = uOld.firstName;
+            }
+            if (u.lastName == undefined || u.lastName == null) {
+                u.lastName = uOld.lastName;
+            }
+            if (u.email == undefined || u.email == null) {
+                u.email = uOld.email;
+            }
+            // if (u.role.role == undefined || u.role.role == null) {
+            //     u.role.role = uOld.role.role;
             // }
-            // if (rO.amount == undefined || rO.amount == null) {
-            //     rO.amount = rOld.amount;
-            // }
-            // if (rO.dateSubmitted == undefined || rO.dateSubmitted == null) {
-            //     rO.dateSubmitted = rOld.dateSubmitted;
-            // }
-            // if (rO.dateResolved == undefined || rO.dateResolved == null) {
-            //     rO.dateResolved = rOld.dateResolved;
-            // }
-            // if (rO.description == undefined || rO.author == null) {
-            //     rO.author = rOld.author;
-            // }
-            // if (rO.author == undefined || rO.author == null) {
-            //     rO.author = rOld.author;
-            // }
-            // if (rO.author == undefined || rO.author == null) {
-            //     rO.author = rOld.author;
-            // }
-            // if (rO.author == undefined || rO.author == null) {
-            //     rO.author = rOld.author;
-            // }
+            if (u.role.roleId == 0 || u.role.roleId == undefined) {
+                u.role.roleId = uOld.role.roleId;
+                console.log(u.role.roleId);
+                
+            }
         }
         let result: QueryResult = await client.query(
-            `UPDATE user set  where user.user_id =$1;`, [u.userId]);
+            `UPDATE users set username=$2,
+            password=$3,
+            firstname=$4,
+            lastname=$5,
+            email=$6,
+            "role"=$7 where user_id =$1;`, [u.userId,u.userName,u.password,u.firstName,u.lastName,u.email,u.role.roleId]);
         // console.log(result.rows[0].user_id);
         let updatedUser: QueryResult = await client.query(
-            `select * from user where user.user_id =$1;`, [u.userId]);
+            `select * from users where user_id =$1;`, [u.userId]);
         let uObj = new User(updatedUser.rows[0].user_id, updatedUser.rows[0].username, updatedUser.rows[0].password, updatedUser.rows[0].firstname, updatedUser.rows[0].lastname, updatedUser.rows[0].email, new Role(updatedUser.rows[0].role_id, updatedUser.rows[0].role));
         console.log(uObj);
         return uObj;

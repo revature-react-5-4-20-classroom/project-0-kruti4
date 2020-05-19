@@ -1,32 +1,6 @@
-
-import { User } from '../models/User';
 import { PoolClient, QueryResult, Pool } from 'pg';
 import { connectionPool } from '.';
 import Reimbursement from '../models/Reimbursement';
-
-// export async function getAllUsers(): Promise<Reimbursement[]> {
-//     let client: PoolClient;
-//     client = await connectionPool.connect();
-//     try {
-//         let result: QueryResult;
-//         result = await client.query(
-//             `SELECT users.user_id, users.username, users.password,users.firstname,users.lastname, users.email,users.role as role_id, roles.role
-//       FROM users INNER JOIN roles ON users.role = roles.role_id;`
-//         );
-//         // result.rows contains objects that almost match our User objects.  Let's write a map()
-//         // that finishes the conversion
-//         return result.rows.map((u) => {
-//             return new User(u.user_id, u.username, u.password, u.firstname, u.lastname, u.email, new Role(u.role_id, u.role));
-//         });
-//     } catch (e) {
-//         throw new Error(`Failed to query for all users: ${e.message}`);
-//     } finally {
-//         //as a reminder, finally always runs, regardless of success or failure.
-//         // One of the main uses of finally is to "clean up" whatever you were doing in try{}.
-//         // In our case, that means releasing our connection back into the pool:
-//         client && client.release();
-//     }
-// }
 
 export async function getReimbursementByStatusId(id: number): Promise<Reimbursement[]> {
     let client: PoolClient = await connectionPool.connect();
@@ -50,10 +24,6 @@ export async function getReimbursementByUserId(id: number): Promise<Reimbursemen
         let result: QueryResult = await client.query(
             `SELECT * FROM reimbursement where author=$1 order by date_submitted;`, [id]
         );
-        // let o = result.rows[0];
-        // console.log(("inside get rem by user id"));
-        // console.log(o);
-        // console.log(new Reimbursement(o.reimbursement_id, o.author, o.amount, o.dateSubmitted, o.dateResolved, o.description, o.resolver, o.status, o.type));
         return result.rows.map((o) => {
             return new Reimbursement(o.reimbursement_id, o.author, o.amount, o.date_submitted, o.date_resolved, o.description, o.resolver, o.status, o.type);
         });
@@ -71,97 +41,71 @@ export async function updateReimbursement(r: Reimbursement): Promise<Reimburseme
     try {
         let rO: Reimbursement = r;
         if (!r.reimbursementId) {
-            throw new Error("please provide user id");
+            throw new Error("please provide reimbursement id");
         }
-        
         else {
             let oldR: QueryResult = await client.query(
                 `select * from reimbursement where reimbursement_id =$1;`, [r.reimbursementId]);
-            let rOld = new Reimbursement(oldR.rows[0].reimbursement_id, oldR.rows[0].author, oldR.rows[0].amount, oldR.rows[0].date_submitted, oldR.rows[0].date_resolved, oldR.rows[0].description, oldR.rows[0].resolver, oldR.rows[0].status, oldR.rows[0].type);
+            let rOld = new Reimbursement(oldR.rows[0].reimbursement_id, oldR.rows[0].author, oldR.rows[0].amount, String(oldR.rows[0].date_submitted), String(oldR.rows[0].date_resolved), oldR.rows[0].description, oldR.rows[0].resolver, oldR.rows[0].status, oldR.rows[0].type);
             // let ele;
             // for (ele in rO) {
             //     if(rO[ele]==undefined || rO[ele]==null){
             //         rO[ele]=rOld[ele];
             //     }
             // }
-            if (rO.author == undefined || rO.author == null) {
+            console.log("khdf" + String(rOld.dateSubmitted));
+            if (rO.author == undefined || rO.author == 0) {
                 rO.author = rOld.author;
+                console.log(rO.author);
+
             }
             if (rO.amount == undefined || rO.amount == null) {
                 rO.amount = rOld.amount;
             }
-            if (rO.dateSubmitted == undefined || rO.dateSubmitted == null) {
-                rO.dateSubmitted = rOld.dateSubmitted;
-            }
-            if (rO.dateResolved == undefined || rO.dateResolved == null) {
-                rO.dateResolved = rOld.dateResolved;
-            }
             if (rO.description == undefined || rO.author == null) {
                 rO.author = rOld.author;
             }
-            if (rO.author == undefined || rO.author == null) {
-                rO.author = rOld.author;
+            if (rO.resolver == undefined || rO.resolver == 0) {
+                rO.resolver = rOld.resolver;
             }
-            if (rO.author == undefined || rO.author == null) {
-                rO.author = rOld.author;
+            if (rO.status == undefined || rO.status == 0) {
+                rO.status = rOld.status;
             }
-            if (rO.author == undefined || rO.author == null) {
-                rO.author = rOld.author;
+            if (rO.type == undefined || rO.type == 0) {
+                rO.type = rOld.type;
             }
         }
+        if (rO.dateSubmitted.length > 6) {
 
+            let result: QueryResult = await client.query(
+                `Update reimbursement set date_submitted=$1;`, [rO.dateSubmitted]);
+        }
+        if (rO.dateResolved.length > 6) {
 
+            let result: QueryResult = await client.query(
+                `Update reimbursement set date_resolved=$1;`, [rO.dateResolved]);
+        }
         let result: QueryResult = await client.query(
-            `UPDATE reimbursement set author=$2  where reimbursement_id =$1;`, [r.reimbursementId,rO.author]);
-        // console.log(result.rows[0].user_id);
+            `UPDATE reimbursement set author=$2,
+            amount=$3,
+            description=$4,
+            resolver=$5,
+            "status"=$6 ,
+            "type"=$7 where reimbursement_id =$1;`, [rO.reimbursementId, rO.author, rO.amount, rO.description, rO.resolver, rO.status, rO.type]);
+
         let updatedReimbursement: QueryResult = await client.query(
             `select * from reimbursement where reimbursement_id =$1;`, [r.reimbursementId]);
         let rObj = new Reimbursement(updatedReimbursement.rows[0].reimbursement_id, updatedReimbursement.rows[0].author, updatedReimbursement.rows[0].amount, updatedReimbursement.rows[0].date_submitted, updatedReimbursement.rows[0].date_resolved, updatedReimbursement.rows[0].description, updatedReimbursement.rows[0].resolver, updatedReimbursement.rows[0].status, updatedReimbursement.rows[0].type);
         console.log(rObj);
-        return r;
+        return rObj;
 
     } catch (e) {
-        throw new Error(`Failed to query to update users: ${e.message}`);
+        throw new Error(`Failed to query to update reimbursement: ${e.message}`);
     } finally {
         client && client.release();
     }
 
 }
-
-// // export async function addNewUser(user: User): Promise<User> {
-// //     //     let client: PoolClient = await connectionPool.connect();
-// //     //     try {
-// //     //         // We need to send another query to get the appropriate role_id for the user's role.
-// //     //         const roleIdResult: QueryResult = await client.query(
-// //     //             `SELECT * FROM roles WHERE roles.role_name = $1`, [user.role]
-// //     //         );
-// //     //         // Get the id we need from that query result
-// //     //         const roleId = roleIdResult.rows[0].id;
-
-// //     //         // Actually add the user, with appropriate role_id
-// //     //         let insertUserResult: QueryResult = await client.query(
-// //     //             `INSERT INTO users (username, "password", email, role_id) VALUES
-// //     //       ($1, $2, $3, $4);`, [user.username, user.password, user.email, roleId]
-// //     //         )
-
-// //     //         // Since we're returning the user, pull our newly created user back out of the db:
-// //     //         let result: QueryResult = await client.query(
-// //     //             `SELECT users.id, users.username, users.password, users.email, roles.role_name
-// //     //       FROM users INNER JOIN roles ON users.role_id = roles.id
-// //     //       WHERE users.username = $1;`, [user.username]
-// //     //         );
-// //     //         return result.rows.map(
-// //     //             (u) => { return new User(u.id, u.username, u.password, u.email, u.role_name) }
-// //     //         )[0];
-// //     //     } catch (e) {
-// //     //         throw new Error(`Failed to add user to DB: ${e.message}`);
-// //     //     } finally {
-// //     //         client && client.release();
-// //     //     }
-// //     return []
-// // }
-
-
 
 
 export async function submitReimbursement(rObj: Reimbursement): Promise<Reimbursement> {

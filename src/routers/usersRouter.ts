@@ -21,8 +21,10 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
         }
     }
 })
-userRouter.use(authRoleFactory(['admin']));
+
+
 userRouter.patch("/",async (req: Request, res: Response) => {
+    userRouter.use(authRoleFactory(['admin']));
     console.log("get patch request");
     let user:User=req.body;
     res.json(await updateUser(user)) 
@@ -31,6 +33,7 @@ userRouter.patch("/",async (req: Request, res: Response) => {
 userRouter.use(authRoleFactory(['finance-manager']));
 
 userRouter.get("/", async (req: Request, res: Response) => {
+    userRouter.use(authRoleFactory(['finance-manager']));
     try {
         res.json(await getAllUsers());
     }
