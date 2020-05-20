@@ -5,6 +5,7 @@ import Reimbursement from "../models/Reimbursement";
 
 export const reimbursementsRouter: Router = express.Router();
 
+//handles add new reimbursement requests
 reimbursementsRouter.post('/', async (req: Request, res: Response) => {
     if (!req.session || !req.session.user) {
         res.status(401).send('Please login');
@@ -19,6 +20,8 @@ reimbursementsRouter.post('/', async (req: Request, res: Response) => {
         }
     }
 });
+
+//handles get method for fetching reimbursement data by user id
 reimbursementsRouter.get('/author/userId/:userId', async (req: Request, res: Response) => {
     let id = +req.params.userId;
     console.log(id);
@@ -34,8 +37,11 @@ reimbursementsRouter.get('/author/userId/:userId', async (req: Request, res: Res
         }
     }
 });
+
+
 reimbursementsRouter.use(authRoleFactory(['finance-manager']));
 
+//handles post method for updating reimbursement data
 reimbursementsRouter.patch('/', async (req: Request, res: Response) => {
     try {
         let re: Reimbursement = req.body;
@@ -45,6 +51,9 @@ reimbursementsRouter.patch('/', async (req: Request, res: Response) => {
         res.send(e.message);
     }
 });
+
+
+//handles get method for fetching reimbursement data by status 
 
 reimbursementsRouter.get('/status/:statusId', async (req: Request, res: Response) => {
     try {

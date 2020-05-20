@@ -1,3 +1,4 @@
+//Reimbursement class to store Reimbursement table data in to object form
 export default class Reimbursement {
     reimbursementId: number;// primary key
     author: number;  // foreign key -> User, not null

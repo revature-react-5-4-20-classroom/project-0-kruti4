@@ -3,7 +3,7 @@ import { User } from '../models/User';
 import { PoolClient, QueryResult, Pool } from 'pg';
 import { connectionPool } from '.';
 import Role from '../models/Role';
-
+//geting users data from user table 
 export async function getAllUsers(): Promise<User[]> {
     let client: PoolClient;
     client = await connectionPool.connect();
@@ -22,7 +22,7 @@ export async function getAllUsers(): Promise<User[]> {
         client && client.release();
     }
 }
-
+//accessing user data from users table by user id
 export async function getUserById(id: number, loggedUserId: number, role: string): Promise<User> {
     let client: PoolClient = await connectionPool.connect();
     try {
@@ -47,6 +47,8 @@ export async function getUserById(id: number, loggedUserId: number, role: string
 
 }
 
+// updating user information in y=users table 
+// only admin is allowed to update data
 export async function updateUser(u: User): Promise<User> {
     let client: PoolClient = await connectionPool.connect();
     try {
@@ -100,6 +102,9 @@ export async function updateUser(u: User): Promise<User> {
     }
 }
 
+
+//geting user info by username and password
+//authenticating user info for login
 export async function findUserByUsernamePassword(username: string, password: string): Promise<User> {
     let client: PoolClient = await connectionPool.connect();
     try {

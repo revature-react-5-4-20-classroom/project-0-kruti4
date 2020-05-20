@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-
+//authenticating users trying to access reimbursement urls
 export function authRoleFactory(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.session || !req.session.user) {

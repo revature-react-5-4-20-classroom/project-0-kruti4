@@ -4,7 +4,7 @@ import { getAllUsers, getUserById, updateUser } from "../repository/userData";
 import { authRoleFactory } from "../middlewares/authForUsersMiddleware";
 import { User } from "../models/User";
 export const userRouter: Router = express.Router();
-
+//hanles get requestes for fetching user data by user id
 userRouter.get("/:id", async (req: Request, res: Response) => {
     let id = +req.params.id;
     console.log(id);
@@ -21,12 +21,14 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
 })
 
 userRouter.use(authRoleFactory(['finance-manager']));
-
+//handles patch request for updating user data
 userRouter.patch("/", async (req: Request, res: Response) => {
     //console.log("get patch request");
     let user: User = req.body;
     res.json(await updateUser(user))
 })
+
+//handles get request for fetching all users data
 
 userRouter.get("/", async (req: Request, res: Response) => {
     try {

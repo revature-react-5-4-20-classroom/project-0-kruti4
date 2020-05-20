@@ -1,7 +1,7 @@
 import { PoolClient, QueryResult, Pool } from 'pg';
 import { connectionPool } from '.';
 import Reimbursement from '../models/Reimbursement';
-
+//fetching reimbursement data by status id from reimbursement table
 export async function getReimbursementByStatusId(id: number): Promise<Reimbursement[]> {
     let client: PoolClient = await connectionPool.connect();
     try {
@@ -17,6 +17,7 @@ export async function getReimbursementByStatusId(id: number): Promise<Reimbursem
         client && client.release();
     }
 }
+//fetching reimbursement data by user id who submited reimbursement from reimbursement table
 
 export async function getReimbursementByUserId(id: number, uId: number, r: string): Promise<Reimbursement[]> {
     let client: PoolClient = await connectionPool.connect();
@@ -37,7 +38,8 @@ export async function getReimbursementByUserId(id: number, uId: number, r: strin
         client && client.release();
     }
 }
-
+//updating reimbursement data by in reimbursement table
+//only user with role finance-manager is allowed to update data
 export async function updateReimbursement(r: Reimbursement): Promise<Reimbursement> {
     let client: PoolClient = await connectionPool.connect();
     try {
@@ -97,6 +99,7 @@ export async function updateReimbursement(r: Reimbursement): Promise<Reimburseme
     }
 }
 
+//inserting new reimbursement in to reimbursement table
 export async function submitReimbursement(rObj: Reimbursement): Promise<Reimbursement> {
     let client: PoolClient = await connectionPool.connect();
     try {

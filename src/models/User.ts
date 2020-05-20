@@ -1,3 +1,4 @@
+//user class to store user table data in to object form
 import Role from "./Role"
 export class User {
   userId: number;// primary key

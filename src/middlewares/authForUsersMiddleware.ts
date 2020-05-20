@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
+//authenticating users trying to access users urls
 
 export function authRoleFactory(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {

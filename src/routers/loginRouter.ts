@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 import { findUserByUsernamePassword } from "../repository/userData";
 export const loginRouter: Router = express.Router();
+//handling login requestes
 loginRouter.post('/', async (req: Request, res: Response) => {
-
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(400).send('Please include username and password fields for login');

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-
+//setting connection to database
 export const connectionPool : Pool = new Pool({
     host: process.env['PG_HOST'],
     user: process.env['PG_USER'],
