@@ -1,10 +1,8 @@
 
 import express, { Router, Request, Response } from "express";
-import { getAllUsers, getUserById ,updateUser} from "../repository/userData";
-import { authRoleFactory } from "../middlewares/authenticationMiddleware";
+import { getAllUsers, getUserById, updateUser } from "../repository/userData";
+import { authRoleFactory } from "../middlewares/authForUsersMiddleware";
 import { User } from "../models/User";
-
-// import { authAdminMiddleware, authRoleFactory } from "../middleware/authMiddleware";
 export const userRouter: Router = express.Router();
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
@@ -22,18 +20,15 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     }
 })
 
-
-userRouter.patch("/",async (req: Request, res: Response) => {
-    userRouter.use(authRoleFactory(['admin']));
-    console.log("get patch request");
-    let user:User=req.body;
-    res.json(await updateUser(user)) 
-})
-
 userRouter.use(authRoleFactory(['finance-manager']));
 
+userRouter.patch("/", async (req: Request, res: Response) => {
+    //console.log("get patch request");
+    let user: User = req.body;
+    res.json(await updateUser(user))
+})
+
 userRouter.get("/", async (req: Request, res: Response) => {
-    userRouter.use(authRoleFactory(['finance-manager']));
     try {
         res.json(await getAllUsers());
     }
