@@ -50,6 +50,7 @@ export async function getUserById(id: number, loggedUserId: number, role: string
 export async function updateUser(u: User): Promise<User> {
     let client: PoolClient = await connectionPool.connect();
     try {
+             
         if (!u.userId) {
             throw new Error("please provide user id");
         }
@@ -57,19 +58,20 @@ export async function updateUser(u: User): Promise<User> {
             let oldU: QueryResult = await client.query(
                 `select * from users where user_id =$1;`, [u.userId]);
             let uOld = new User(oldU.rows[0].user_id, oldU.rows[0].username, oldU.rows[0].password, oldU.rows[0].firstname, oldU.rows[0].lastname, oldU.rows[0].email, new Role(oldU.rows[0].role, oldU.rows[0].role));
-            if (u.userName == undefined || u.userName == null) {
+            if (u.userName == undefined || u.userName == "") {
                 u.userName = uOld.userName;
             }
-            if (u.password == undefined || u.password == null) {
+            if (u.password == undefined || u.password == "") {
                 u.password = uOld.password;
             }
-            if (u.firstName == undefined || u.firstName == null) {
+            if (u.firstName == undefined || u.firstName == "") {
                 u.firstName = uOld.firstName;
             }
-            if (u.lastName == undefined || u.lastName == null) {
+            if (u.lastName == undefined || u.lastName == "") {
                 u.lastName = uOld.lastName;
+                
             }
-            if (u.email == undefined || u.email == null) {
+            if (u.email == undefined || u.email == "") {
                 u.email = uOld.email;
             }
             if (u.role.roleId == 0 || u.role.roleId == undefined) {
@@ -89,7 +91,6 @@ export async function updateUser(u: User): Promise<User> {
         let getRole: QueryResult = await client.query(
             `select "role" from roles where role_id=$1`, [u.role.roleId])
         let uObj = new User(updatedUser.rows[0].user_id, updatedUser.rows[0].username, updatedUser.rows[0].password, updatedUser.rows[0].firstname, updatedUser.rows[0].lastname, updatedUser.rows[0].email, new Role(updatedUser.rows[0].role, getRole.rows[0].role));
-        console.log(uObj);
         return uObj;
 
     } catch (e) {

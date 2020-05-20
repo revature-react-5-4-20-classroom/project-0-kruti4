@@ -11,7 +11,6 @@ export function authRoleFactory(roles: string[]) {
           allowed = true;
         }
       }
-      console.log(req.method);
       if (req.method == "PATCH" && req.session.user.role.role == "admin") {
         allowed = true;
       }

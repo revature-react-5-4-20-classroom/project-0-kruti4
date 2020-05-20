@@ -12,7 +12,7 @@ export async function getReimbursementByStatusId(id: number): Promise<Reimbursem
             return new Reimbursement(o.reimbursement_id, o.author, o.amount, o.date_submitted, o.date_resolved, o.description, o.resolver, o.status, o.type);
         });
     } catch (e) {
-        throw new Error(`Failed to query for all reimbursement: ${e}`);
+        throw new Error(e.message);
     } finally {
         client && client.release();
     }
@@ -32,7 +32,7 @@ export async function getReimbursementByUserId(id: number, uId: number, r: strin
             throw new Error('The incoming token has expired');
         }
     } catch (e) {
-        throw new Error(`Failed to query for all reimbursement: ${e}`);
+        throw new Error(e.message);
     } finally {
         client && client.release();
     }
@@ -72,11 +72,11 @@ export async function updateReimbursement(r: Reimbursement): Promise<Reimburseme
         }
         if (rO.dateSubmitted.length > 6) {
             let result: QueryResult = await client.query(
-                `Update reimbursement set date_submitted=$1; where reimbursement_id=$2`, [rO.dateSubmitted, rO.reimbursementId]);
+                `Update reimbursement set date_submitted=$1 where reimbursement_id=$2`, [rO.dateSubmitted, rO.reimbursementId]);
         }
         if (rO.dateResolved.length > 6) {
             let result: QueryResult = await client.query(
-                `Update reimbursement set date_resolved=$1; where reimbursement_id=$2`, [rO.dateResolved, rO.reimbursementId]);
+                `Update reimbursement set date_resolved=$1 where reimbursement_id=$2`, [rO.dateResolved, rO.reimbursementId]);
         }
         let result: QueryResult = await client.query(
             `UPDATE reimbursement set author=$2,
@@ -91,7 +91,7 @@ export async function updateReimbursement(r: Reimbursement): Promise<Reimburseme
         console.log(rObj);
         return rObj;
     } catch (e) {
-        throw new Error(`Failed to query to update reimbursement: ${e.message}`);
+        throw new Error(e.message);
     } finally {
         client && client.release();
     }
@@ -103,14 +103,14 @@ export async function submitReimbursement(rObj: Reimbursement): Promise<Reimburs
         const result: QueryResult = await client.query(
             `insert into reimbursement values(default,$1,$2,$3,$4,$5,$6,$7,$8);`, [rObj.author, rObj.amount, rObj.dateSubmitted, rObj.dateResolved, rObj.description, rObj.resolver, rObj.status, rObj.type]
         );
+        console.log(result);
         const newReimbursement: QueryResult = await client.query(
             `select * from reimbursement where reimbursement_id = (select max(reimbursement_id) from reimbursement);`);// r2 where r2.author =$1);`, [rObj.author]);
         return newReimbursement.rows.map(
             (r) => { return new Reimbursement(r.reimbursement_id, r.author, r.amount, r.date_submitted, r.date_resolved, r.description, r.resolver, r.status, r.type) }
         )[0];
     } catch (e) {
-        console.log(e);
-        throw new Error("Failed to add new Reimbursement" + e);
+        throw new Error(e.message);
     } finally {
         client && client.release();
     }
