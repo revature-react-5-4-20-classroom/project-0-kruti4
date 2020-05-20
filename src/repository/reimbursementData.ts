@@ -72,11 +72,11 @@ export async function updateReimbursement(r: Reimbursement): Promise<Reimburseme
         }
         if (rO.dateSubmitted.length > 6) {
             let result: QueryResult = await client.query(
-                `Update reimbursement set date_submitted=$1;`, [rO.dateSubmitted]);
+                `Update reimbursement set date_submitted=$1; where reimbursement_id=$2`, [rO.dateSubmitted, rO.reimbursementId]);
         }
         if (rO.dateResolved.length > 6) {
             let result: QueryResult = await client.query(
-                `Update reimbursement set date_resolved=$1;`, [rO.dateResolved]);
+                `Update reimbursement set date_resolved=$1; where reimbursement_id=$2`, [rO.dateResolved, rO.reimbursementId]);
         }
         let result: QueryResult = await client.query(
             `UPDATE reimbursement set author=$2,
