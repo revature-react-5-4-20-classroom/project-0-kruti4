@@ -24,8 +24,12 @@ userRouter.use(authRoleFactory(['finance-manager']));
 //handles patch request for updating user data
 userRouter.patch("/", async (req: Request, res: Response) => {
     //console.log("get patch request");
-    let user: User = req.body;
-    res.json(await updateUser(user))
+    try {
+        let user: User = req.body;
+        res.json(await updateUser(user));
+    } catch (e) {
+        res.status(401).send(e.message);
+    }
 })
 
 //handles get request for fetching all users data

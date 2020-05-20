@@ -96,7 +96,7 @@ export async function updateUser(u: User): Promise<User> {
         return uObj;
 
     } catch (e) {
-        throw new Error(`Failed to query to update users: ${e.message}`);
+        throw new Error(e);
     } finally {
         client && client.release();
     }
