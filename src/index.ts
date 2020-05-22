@@ -13,6 +13,7 @@ import { loginRouter } from "./routers/loginRouter";
 
 const app: Application = express();
 app.get('/new-endpoint',(req:Request,res:Response)=>{
+    
     res.send("webhooks worked")
 })
 app.use(bodyparser.json());
