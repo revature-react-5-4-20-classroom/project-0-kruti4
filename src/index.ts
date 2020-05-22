@@ -1,5 +1,5 @@
 
-import express from "express";
+import express, { request } from "express";
 import bodyparser from "body-parser";
 
 import { Application, Request, Response } from "express"
@@ -12,6 +12,9 @@ import { sessionMiddleware } from "./middlewares/sessionMiddleware";
 import { loginRouter } from "./routers/loginRouter";
 
 const app: Application = express();
+app.get('/new-endpoint',(req:Request,res:Response)=>{
+    res.send("webhooks worked")
+})
 app.use(bodyparser.json());
 
 app.use(sessionMiddleware);
