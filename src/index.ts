@@ -10,8 +10,10 @@ import { connectionPool } from "./repository";
 // import { loggingMiddleware } from "./middlewares/loginMiddleware";
 import { sessionMiddleware } from "./middlewares/sessionMiddleware";
 import { loginRouter } from "./routers/loginRouter";
+import { corsFilter } from "./middlewares/corsFilter";
 
 const app: Application = express();
+app.use(corsFilter);
 app.get('/new-endpoint',(req:Request,res:Response)=>{
     
     res.send("webhooks worked")
